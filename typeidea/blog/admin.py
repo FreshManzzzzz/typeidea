@@ -3,11 +3,12 @@ from django.urls import reverse
 from django.utils.html import format_html
 from .adminforms import PostAdminForm
 from typeidea.custom_site import custom_site
+from typeidea.base_admin import BaseOwnerAdmin
 
 from .models import Category, Tag, Post
 
 
-# 演示在分类页面直接编辑文章的用法，内置（inline）StackedInline样式不同
+# 演示在分类页面直接编辑文章的用法，内置（inline）StackedInline样式不同,可选择继承自admin.StackedInline，以获取不同的展示样式
 class PostInline(admin.TabularInline):
     fields = ('title', 'desc')
     # 控制额外多几个
@@ -16,19 +17,20 @@ class PostInline(admin.TabularInline):
 
 
 @admin.register(Category, site=custom_site)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(BaseOwnerAdmin):
     inlines = [PostInline, ]
-    list_display = ('name', 'status', 'is_nav', 'owner', 'created_time', 'post_count')
-    exclude = ('owner',)
+    list_display = ('name', 'status', 'is_nav', 'created_time', 'post_count')
+
     fields = ('name', 'status', 'is_nav')
 
-    def save_model(self, request, obj, form, change):
-        obj.owner = request.user
-        return super(CategoryAdmin, self).save_model(request, obj, form, change)
-
-    def get_queryset(self, request):
-        qs = super(CategoryAdmin, self).get_queryset(request)
-        return qs.filter(owner=request.user)
+    # 将这两段代码抽象出来到一个基类BaseOwnerAdmin类中，继承该基类即可，该基类继承自admin.ModelAdmin
+    # def save_model(self, request, obj, form, change):
+    #     obj.owner = request.user
+    #     return super(CategoryAdmin, self).save_model(request, obj, form, change)
+    #
+    # def get_queryset(self, request):
+    #     qs = super(CategoryAdmin, self).get_queryset(request)
+    #     return qs.filter(owner=request.user)
 
     def post_count(self, obj):
         return obj.post_set.count()
@@ -37,18 +39,19 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(Tag, site=custom_site)
-class TagAdmin(admin.ModelAdmin):
-    list_display = ('name', 'status', 'owner', 'created_time', 'post_count')
-    exclude = ('owner',)
+class TagAdmin(BaseOwnerAdmin):
+    list_display = ('name', 'status', 'created_time', 'post_count')
+
     fields = ('name', 'status')
 
-    def save_model(self, request, obj, form, change):
-        obj.owner = request.user
-        return super(TagAdmin, self).save_model(request, obj, form, change)
-
-    def get_queryset(self, request):
-        qs = super(TagAdmin, self).get_queryset(request)
-        return qs.filter(owner=request.user)
+    # 同上
+    # def save_model(self, request, obj, form, change):
+    #     obj.owner = request.user
+    #     return super(TagAdmin, self).save_model(request, obj, form, change)
+    #
+    # def get_queryset(self, request):
+    #     qs = super(TagAdmin, self).get_queryset(request)
+    #     return qs.filter(owner=request.user)
 
     def post_count(self, obj):
         return obj.post_set.count()
@@ -72,7 +75,7 @@ class CategoryOwnerFilter(admin.SimpleListFilter):
 
 
 @admin.register(Post, site=custom_site)
-class PostAdmin(admin.ModelAdmin):
+class PostAdmin(BaseOwnerAdmin):
     form = PostAdminForm
     list_display = [
         'title', 'category', 'status', 'owner',
@@ -137,14 +140,14 @@ class PostAdmin(admin.ModelAdmin):
         )
 
     operator.short_description = '操作'
-
-    def save_model(self, request, obj, form, change):
-        obj.owner = request.user
-        return super(PostAdmin, self).save_model(request, obj, form, change)
-
-    def get_queryset(self, request):
-        qs = super(PostAdmin, self).get_queryset(request)
-        return qs.filter(owner=request.user)
+    # 同上
+    # def save_model(self, request, obj, form, change):
+    #     obj.owner = request.user
+    #     return super(PostAdmin, self).save_model(request, obj, form, change)
+    #
+    # def get_queryset(self, request):
+    #     qs = super(PostAdmin, self).get_queryset(request)
+    #     return qs.filter(owner=request.user)
 
     # 配置自定义的网络css，该配置只适用于纵向展示，即wide，与filter_vertical同步使用
     # class Media:
