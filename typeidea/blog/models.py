@@ -82,6 +82,9 @@ class Post(models.Model):
     tag = models.ManyToManyField(Tag, verbose_name="标签")
     owner = models.ForeignKey(User, verbose_name="作者")
     created_time = models.DateTimeField(auto_now_add=True, verbose_name="创建时间")
+    # 用于统计每篇文章访问量的字段
+    pv = models.PositiveSmallIntegerField(default=1)
+    uv = models.PositiveSmallIntegerField(default=1)
 
     class Meta:
         verbose_name = verbose_name_plural = '文章'
@@ -112,7 +115,13 @@ class Post(models.Model):
             post_list = category.post_set.filter(status=Post.STATUS_NORMAL).select_related('owner', 'category')
         return post_list, category
 
+    # 最近文章，直接获取全部文章数据即可，因为是按照id降序排列的，而id是按照创建时间先后分配的
     @classmethod
     def latest_posts(cls):
         queryset = cls.objects.filter(status=cls.STATUS_NORMAL)
         return queryset
+
+    # 最热文章,以访问量pv的数目降序排列
+    @classmethod
+    def hot_posts(cls):
+        return cls.objects.filter(status=cls.STATUS_NORMAL).order_by('-pv')
