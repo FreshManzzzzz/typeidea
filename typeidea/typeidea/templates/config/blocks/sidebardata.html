@@ -1,0 +1,22 @@
+<div>侧边栏展示:
+    {% for sidebar in sidebars %}
+
+    <h4>{{ sidebar.title }}</h4>
+        {% if sidebar.display_type == sidebar.DISPLAY_HTML %}
+            {{ sidebar.content }}
+        {% elif sidebar.display_typpe == sidebar.DISPLAY_LATEST %}
+            {% for post in recently_posts %}
+                <li><a href="/post/{{ post.id }}.html">{{ post.title }}</a> </li>
+            {% endfor %}
+        {% elif sidebar.display_type == sidebar.DISPLAY_HOT %}
+            {% for post in hot_posts %}
+                <li><a href="/post/{{ post.id }}.html">{{ post.title }}</a> </li>
+            {% endfor %}
+        {% elif sidebar.display_type == sidebar.DISPLAY_COMMENT %}
+            {%for comment in comments %}
+                <li><a href="/post/{{ comment.target_id }}.html">{{ comment.target.title }}</a>
+                    {{ comment.nickname }}:{{ comment.content }} </li>
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+</div>

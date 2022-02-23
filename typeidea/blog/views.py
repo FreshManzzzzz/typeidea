@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from blog.models import Post, Tag, Category
 from config.models import SideBar
+from comment.models import Comment
 
 
 def post_list(request, category_id=None, tag_id=None):
@@ -35,9 +36,11 @@ def post_list(request, category_id=None, tag_id=None):
         'tag': tag,
         'category': category,
         'post_list': post_list,
-        'sidebars': SideBar.get_all(),
+
     }
     context.update(Category.get_navs())
+
+    context.update(get_sidebardata())
 
     return render(request, 'blog/list.html', context=context)
 
@@ -49,7 +52,23 @@ def post_detail(request, post_id=None):
         post = None
     context = {
         'post': post,
-        'sidebars': SideBar.get_all(),
     }
     context.update(Category.get_navs())
+    context.update(get_sidebardata())
+
     return render(request, 'blog/detail.html', context=context)
+
+
+def get_sidebardata():
+    sidebars = SideBar.get_all()
+    recently_posts = Post.latest_posts()
+    hot_posts = Post.hot_posts()
+    comments = Comment.objects.filter(status=Comment.STATUS_NORMAL)
+    context = {
+        'sidebars': sidebars,
+        'recently_posts': recently_posts,
+        'hot_posts': hot_posts,
+        'comments': comments,
+    }
+
+    return context
