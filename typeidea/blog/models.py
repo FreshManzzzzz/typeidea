@@ -62,6 +62,14 @@ class Tag(models.Model):
     def __str__(self):
         return self.name
 
+    @classmethod
+    def get_all_tags(cls):
+        tags = Tag.objects.filter(status=Tag.STATUS_NORMAL)
+        context = {
+            'tags': tags,
+        }
+        return context
+
 
 class Post(models.Model):
     STATUS_NORMAL = 1

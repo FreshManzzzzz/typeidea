@@ -14,6 +14,7 @@ class CommonViewMixin:
             'sidebars': SideBar.get_all(),
         })
         context.update(Category.get_navs())
+        context.update(Tag.get_all_tags())
         return context
 
 
@@ -47,7 +48,7 @@ class TagView(IndexView):
         tag_id = self.kwargs.get('tag_id')
         tag = get_object_or_404(Tag, pk=tag_id)
         context.update({
-            'tag', tag,
+            'tag': tag,
         })
         return context
 
@@ -55,7 +56,13 @@ class TagView(IndexView):
         """重写queryset，根据标签过滤"""
         queryset = super().get_queryset()
         tag_id = self.kwargs.get('tag_id')
-        return queryset.filter(tag_id=tag_id)
+        try:
+            tag = Tag.objects.get(id=tag_id)
+        except Tag.DoesNotExist:
+            post_list = []
+        else:
+            post_list = tag.post_set.filter(status=Post.STATUS_NORMAL)
+        return post_list
 
 
 class PostDetailView(CommonViewMixin, DetailView):

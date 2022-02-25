@@ -11,7 +11,12 @@
     {% endfor %}
 </div>
 <hr/>
-
+<div>标签页:
+    {% for tag in tags %}
+    <a href="{% url 'tag-list' tag.id %}">{{ tag.name }}</a>
+    {% endfor %}
+</div>
+<hr/>
 {% block main %}
 {% endblock %}
 
