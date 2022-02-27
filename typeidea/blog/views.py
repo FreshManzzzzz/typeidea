@@ -1,6 +1,7 @@
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from blog.models import Post, Tag, Category
+
 from config.models import SideBar
 from django.views.generic import ListView, DetailView
 
