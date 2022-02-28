@@ -6,6 +6,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,shrink-to-fit=no">
     <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}">
+
+
     <style>
         .post {
             margin-bottom:5px;
@@ -13,6 +15,8 @@
 
 
     </style>
+    {% block extra_head %}
+    {% endblock %}
 </head>
 <body>
 <div class="container head">
@@ -51,7 +55,9 @@
                 <div class="card-sidebar">
                     <h4 class="card-title">{{ sidebar.title }}</h4>
                     <p>
+                        {% autoescape off %}
                         {{ sidebar.content_html }}
+                        {% endautoescape %}
                     </p>
                 </div>
             </div>
