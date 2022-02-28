@@ -20,6 +20,7 @@
                 {% endfor %}
             </span>
         <span>创建时间:{{ post.created_time }}</span>
+        <span>pv/uv:{{ post.pv }}/{{ post.uv }}</span>
         <hr/>
         <p class="card-text">{% autoescape off %}{{ post.content_html }}{% endautoescape %}</p>
     </div>
