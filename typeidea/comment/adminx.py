@@ -1,13 +1,13 @@
 from django.contrib import admin
-from typeidea.custom_site import custom_site
+import xadmin
 
 from blog.models import Post
 
 from .models import Comment
 
 
-@admin.register(Comment, site=custom_site)
-class CommentAdmin(admin.ModelAdmin):
+@xadmin.sites.register(Comment)
+class CommentAdmin(object):
     list_display = ('target', 'nickname', 'content', 'website', 'status', 'created_time')
 
     # 配置评论只显示当前用户所拥有文章的评论

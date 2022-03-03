@@ -1,3 +1,4 @@
+import xadmin.sites
 from django.contrib import admin
 from django.urls import reverse
 from django.utils.html import format_html
@@ -5,19 +6,26 @@ from .adminforms import PostAdminForm
 from typeidea.custom_site import custom_site
 from typeidea.base_admin import BaseOwnerAdmin
 from django.contrib.admin.models import LogEntry
+from xadmin.layout import Row, Fieldset, Container
+from xadmin.filters import manager
+from xadmin.filters import RelatedFieldListFilter
 
 from .models import Category, Tag, Post
 
 
 # 演示在分类页面直接编辑文章的用法，内置（inline）StackedInline样式不同,可选择继承自admin.StackedInline，以获取不同的展示样式
-class PostInline(admin.TabularInline):
-    fields = ('title', 'desc')
+class PostInline:
+    form_layout = (
+        Container(
+            Row("title", "desc", "status", "tag", "content"),
+        )
+    )
     # 控制额外多几个
     extra = 1
     model = Post
 
 
-@admin.register(Category, site=custom_site)
+@xadmin.sites.register(Category)
 class CategoryAdmin(BaseOwnerAdmin):
     inlines = [PostInline, ]
     list_display = ('name', 'status', 'is_nav', 'created_time', 'post_count')
@@ -39,7 +47,7 @@ class CategoryAdmin(BaseOwnerAdmin):
     post_count.short_description = '文章数量'
 
 
-@admin.register(Tag, site=custom_site)
+@xadmin.sites.register(Tag)
 class TagAdmin(BaseOwnerAdmin):
     list_display = ('name', 'status', 'created_time', 'post_count')
 
@@ -60,22 +68,23 @@ class TagAdmin(BaseOwnerAdmin):
     post_count.short_description = '文章数量'
 
 
-class CategoryOwnerFilter(admin.SimpleListFilter):
+class CategoryOwnerFilter(RelatedFieldListFilter):
     """自定义过滤器只展示当前用户分类"""
-    title = '分类过滤器'
-    parameter_name = 'owner_category'
 
-    def lookups(self, request, model_admin):
-        return Category.objects.filter(owner=request.user).values_list('id', 'name')
+    @classmethod
+    def test(cls, field, request, params, model, admin_view, field_path):
+        return field.name == 'category'
 
-    def queryset(self, request, queryset):
-        category_id = self.value()
-        if category_id:
-            return queryset.filter(category_id=category_id)
-        return queryset
+    def __init__(self, field, request, params, model, model_admin, field_path):
+        super().__init__(field, request, params, model, model_admin, field_path)
+        # 重新获取lookup_choices，根据owner过滤
+        self.lookup_choices = Category.objects.filter(owner=request.user).values_list('id', 'name')
 
 
-@admin.register(Post, site=custom_site)
+manager.register(CategoryOwnerFilter, take_priority=True)
+
+
+@xadmin.sites.register(Post)
 class PostAdmin(BaseOwnerAdmin):
     form = PostAdminForm
     list_display = [
@@ -83,8 +92,8 @@ class PostAdmin(BaseOwnerAdmin):
         'created_time', 'operator'
     ]
     list_display_links = []
-
-    list_filter = [CategoryOwnerFilter]
+    # 注意这里不是定义的filter类，而是字段名
+    list_filter = ['category']
     search_fields = ['title', 'category__name']
 
     actions_on_top = True
@@ -102,34 +111,23 @@ class PostAdmin(BaseOwnerAdmin):
     #     'tag',
     # )
     # fieldsets
-    fieldsets = (
-        (
-            '基础配置', {
-                'description': '基础配置描述',
-                'fields': (
-                    ('title', 'category'),
-                    'status',
-                ),
-            }
+    form_layout = (
+        Fieldset(
+            '基础信息',
+            Row("title", "category"),
+            'status',
+            'tag',
         ),
-        (
-            '内容', {
-                'fields': (
-                    'desc',
-                    'content',
-                ),
-            }
-        ),
-        (
-            '额外信息', {
-                'classes': ('collapse',),
-                'fields': ('tag',),
-            }
-        ),
+        Fieldset(
+            '内容信息',
+            'desc',
+
+            'content',
+        )
     )
 
     # 配置多对多字段tag纵向展示以及默认的展示效果
-    filter_vertical = ('tag',)
+    # filter_vertical = ('tag',)
 
     # 配置多对多字段tag横向展示以及默认的展示效果
     # filter_horizontal = ('tag',)
@@ -137,10 +135,11 @@ class PostAdmin(BaseOwnerAdmin):
     def operator(self, obj):
         return format_html(
             '<a href="{}">编辑</a>',
-            reverse('cus_admin:blog_post_change', args=(obj.id,))
+            reverse('xadmin:blog_post_change', args=(obj.id,))
         )
 
     operator.short_description = '操作'
+
     # 同上
     # def save_model(self, request, obj, form, change):
     #     obj.owner = request.user
@@ -157,9 +156,12 @@ class PostAdmin(BaseOwnerAdmin):
     #     }
     #     js = ('https://cdn.bootcss.com/bootstrap/4.0.0-beta.2/js/bootstrap.bundle.js',)
 
-
-@admin.register(LogEntry, site=admin.site)
-class LogEntryAdmin(admin.ModelAdmin):
-    list_display = [
-        'object_repr', 'object_id', 'action_flag', 'user', 'change_message'
-    ]
+    # @property
+    # def media(self):
+    #     # # xadmin基于bootstrap，引入会页面样式冲突，仅供参考, 故注释。
+    #     media = super().media()
+    #     media.add_js(['https://cdn.bootcss.com/bootstrap/4.0.0-beta.2/js/bootstrap.bundle.js'])
+    #     media.add_css({
+    #         'all': ("https://cdn.bootcss.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css",),
+    #     })
+    #     return media

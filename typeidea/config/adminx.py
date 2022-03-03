@@ -1,10 +1,10 @@
 from django.contrib import admin
-from typeidea.custom_site import custom_site
+import xadmin
 from .models import Link, SideBar
 from typeidea.base_admin import BaseOwnerAdmin
 
 
-@admin.register(Link, site=custom_site)
+@xadmin.sites.register(Link)
 class LinkAdmin(BaseOwnerAdmin):
     list_display = ('title', 'href', 'status', 'weight', 'owner', 'created_time')
     exclude = ('owner',)
@@ -19,11 +19,9 @@ class LinkAdmin(BaseOwnerAdmin):
     #     return qs.filter(owner=request.user)
 
 
-@admin.register(SideBar, site=custom_site)
+@xadmin.sites.register(SideBar)
 class SideBarAdmin(BaseOwnerAdmin):
     list_display = ('title', 'display_type', 'content', 'owner', 'created_time')
     exclude = ('owner',)
     fields = ('title', 'display_type', 'content')
     list_filter = ['display_type', ]
-
-

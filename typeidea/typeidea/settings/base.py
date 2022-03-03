@@ -33,6 +33,8 @@ INSTALLED_APPS = [
     'blog',
     'config',
     'comment',
+    'xadmin',
+    'crispy_forms',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -108,6 +110,9 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
+
+XADMIN_TITLE = 'Typeidea管理后台'
+XADMIN_FOOTER_TITLE = 'power by shj'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
