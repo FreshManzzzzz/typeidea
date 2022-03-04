@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'crispy_forms',
     'dal',
     'dal_select2',
+    'ckeditor',
+    'ckeditor_uploader',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -59,6 +61,9 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'typeidea.urls'
 THEME = 'bootstrap'
+
+# 修改默认的存储引擎是自己定义的存储引擎
+DEFAULT_FILE_STORAGE = 'typeidea.storage.WatermarkStorage'
 
 TEMPLATES = [
     {
@@ -118,6 +123,22 @@ XADMIN_FOOTER_TITLE = 'power by shj'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
+
+
+CKEDITOR_CONFIG = {
+    'default': {
+        'toolbar': 'full',
+        'height': 300,
+        'width': 800,
+        'tabSpaces': 4,
+        # 配置代码插件
+        'extraPlugins': 'codesnippet'
+    },
+}
+
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+CKEDITOR_UPLOAD_PATH = "article_images"
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
