@@ -3,6 +3,13 @@ from rest_framework import serializers, pagination
 from .models import Post, Category, Tag
 
 
+# 写入文章数据的接口
+class PostWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = ['id', 'title', 'category', 'tag', 'owner', 'content', 'created_time']
+
+
 class PostSerializer(serializers.ModelSerializer):
     category = serializers.SlugRelatedField(
         read_only=True,

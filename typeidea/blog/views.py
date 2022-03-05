@@ -9,17 +9,28 @@ from config.models import SideBar
 from django.views.generic import ListView, DetailView
 
 
+# from silk.profiling.profiler import silk_profile
+
+
 # 将function view改造为class-based view
 # 专门用来处理页面的通用数据，如分类数据，侧边栏数据的类
 class CommonViewMixin:
+    # @silk_profile(name='get_context_data')
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update({
+        # context = super().get_context_data(**kwargs)
+        # context.update({
+        #     'sidebars': SideBar.get_all(),
+        # })
+        # context.update(Category.get_navs())
+        # context.update(Tag.get_all_tags())
+        # return context
+
+        kwargs.update({
             'sidebars': SideBar.get_all(),
         })
-        context.update(Category.get_navs())
-        context.update(Tag.get_all_tags())
-        return context
+        kwargs.update(Category.get_navs())
+        kwargs.update(Tag.get_all_tags())
+        return super().get_context_data(**kwargs)
 
 
 class IndexView(CommonViewMixin, ListView):

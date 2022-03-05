@@ -143,11 +143,17 @@ class Post(models.Model):
 
     # 最近文章，直接获取全部文章数据即可，因为是按照id降序排列的，而id是按照创建时间先后分配的
     @classmethod
-    def latest_posts(cls):
+    def latest_posts(cls, with_related=True):
         queryset = cls.objects.filter(status=cls.STATUS_NORMAL)
+        if with_related:
+            queryset = queryset.select_related('owner', 'category')
         return queryset
 
     # 最热文章,以访问量pv的数目降序排列
     @classmethod
-    def hot_posts(cls):
-        return cls.objects.filter(status=cls.STATUS_NORMAL).order_by('-pv')
+    def hot_posts(cls,with_related = True):
+        queryset = cls.objects.filter(status=cls.STATUS_NORMAL).only('title','id')
+        if with_related:
+            queryset = cls.objects.filter(status=cls.STATUS_NORMAL).select_related('owner', 'category').prefetch_related(
+            'tag').order_by('-pv')
+        return queryset

@@ -28,7 +28,7 @@ from comment.views import CommentView
 from django.contrib.sitemaps import views as sitemap_views
 from blog.rss import LatestPostFeed
 from blog.sitemap import PostSitemap
-from blog.apis import PostViewSet,CategoryViewSet,TagViewSet
+from blog.apis import PostViewSet,CategoryViewSet,TagViewSet,PostWriteViewSet
 from .custom_site import custom_site
 import xadmin
 from .autocomplete import CategoryAutocomplete, TagAutocomplete
@@ -39,6 +39,7 @@ router = DefaultRouter()
 router.register(r'post',PostViewSet,base_name='api-post')
 router.register(r'category',CategoryViewSet,base_name='api-category')
 router.register(r'tag',TagViewSet,base_name='api-tag')
+router.register(r'post_write',PostWriteViewSet,base_name='api-post_write')
 
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name='index'),
@@ -61,3 +62,13 @@ urlpatterns = [
 
 
 ] + static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT)
+
+
+
+if settings.DEBUG:
+    import debug_toolbar
+
+    urlpatterns = [
+        url(r'^__debug__/',include(debug_toolbar.urls)),
+        # url(r'silk/',include('silk.urls',namespace='silk'))
+    ] + urlpatterns
