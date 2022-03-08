@@ -151,3 +151,5 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'themes', THEME, "static"),
 ]
+# 配置线上环境 DEBUG=False时的静态文件获取路径
+STATIC_ROOT = '../static_files/'

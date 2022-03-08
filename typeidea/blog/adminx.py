@@ -14,20 +14,20 @@ from .models import Category, Tag, Post
 
 
 # 演示在分类页面直接编辑文章的用法，内置（inline）StackedInline样式不同,可选择继承自admin.StackedInline，以获取不同的展示样式
-class PostInline:
-    form_layout = (
-        Container(
-            Row("title", "desc", "status", "tag", "content"),
-        )
-    )
-    # 控制额外多几个
-    extra = 1
-    model = Post
+# class PostInline:
+#     form_layout = (
+#         Container(
+#             Row("title", "desc", "status", "tag", "content"),
+#         )
+#     )
+#     # 控制额外多几个
+#     extra = 1
+#     model = Post
 
 
 @xadmin.sites.register(Category)
 class CategoryAdmin(BaseOwnerAdmin):
-    inlines = [PostInline, ]
+    # inlines = [PostInline, ]
     list_display = ('name', 'status', 'is_nav', 'created_time', 'post_count')
 
     fields = ('name', 'status', 'is_nav')

@@ -32,8 +32,10 @@ from blog.apis import PostViewSet,CategoryViewSet,TagViewSet,PostWriteViewSet
 from .custom_site import custom_site
 import xadmin
 from .autocomplete import CategoryAutocomplete, TagAutocomplete
-
+from django.views.decorators.cache import cache_page
 from config.views import LinkListView
+from django.views.static import serve
+import re
 
 router = DefaultRouter()
 router.register(r'post',PostViewSet,base_name='api-post')
@@ -41,8 +43,15 @@ router.register(r'category',CategoryViewSet,base_name='api-category')
 router.register(r'tag',TagViewSet,base_name='api-tag')
 router.register(r'post_write',PostWriteViewSet,base_name='api-post_write')
 
+
+
+def static(prefix, **kwargs):
+    return [
+        url(r'^%s(?P<path>.*)$' % re.escape(prefix.lstrip('/')), serve, kwargs=kwargs),
+    ]
+
 urlpatterns = [
-    url(r'^$', IndexView.as_view(), name='index'),
+    url(r'^$', cache_page(60*5)(IndexView.as_view()), name='index'),
     url(r'^category/(?P<category_id>\d+)/$', CategoryView.as_view(), name='category-list'),
     url(r'^tag/(?P<tag_id>\d+)/$', TagView.as_view(), name='tag-list'),
     url(r'^post/(?P<post_id>\d+).html', PostDetailView.as_view(), name='post-detail'),
@@ -61,11 +70,13 @@ urlpatterns = [
     url(r'^api/docs/',include_docs_urls(title='typeidea apis')),
 
 
-] + static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL,document_root = settings.MEDIA_ROOT) \
+              + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 
 
-if settings.DEBUG:
+
+if  settings.DEBUG:
     import debug_toolbar
 
     urlpatterns = [
