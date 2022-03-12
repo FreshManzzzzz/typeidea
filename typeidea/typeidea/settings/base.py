@@ -23,7 +23,7 @@ SECRET_KEY = '--ux52czy@(fp3d7ryclc-1&$_waq%a+f2uk63qjm1gxx3ry+x'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 
-
+VERSION = '${version}'
 ALLOWED_HOSTS = []
 
 # Application definition
@@ -117,7 +117,7 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+USE_TZ = False
 
 XADMIN_TITLE = 'Typeidea管理后台'
 XADMIN_FOOTER_TITLE = 'power by shj'
