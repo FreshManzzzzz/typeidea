@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404
 from blog.models import Post, Tag, Category
 
 from config.models import SideBar
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, TemplateView
 
 
 # from silk.profiling.profiler import silk_profile
@@ -141,6 +141,24 @@ class AuthorView(IndexView):
         queryset = super().get_queryset()
         author_id = self.kwargs.get('owner_id')
         return queryset.filter(owner_id=author_id)
+
+    # 线上环境处理404，500错误的视图
+
+
+class Handler404(CommonViewMixin, TemplateView):
+    template_name = '404.html'
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context, status=404)
+
+
+class Handler50x(CommonViewMixin, TemplateView):
+    template_name = '50x.html'
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context, status=500)
 
 # 基于function view的代码
 # def post_list(request, category_id=None, tag_id=None):

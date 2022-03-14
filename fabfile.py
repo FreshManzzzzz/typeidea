@@ -108,5 +108,5 @@ def deploy(version, profile):
             env.PYPI_HOST,
         ))
 
-    # _reload_supervisoird(env.DEPLOY_PATH, profile)
-    # run('echo yes | %s/bin/manage.py collectstatic' % env.DEPLOY_PATH)
+    _reload_supervisoird(env.DEPLOY_PATH, profile)
+    run('echo yes | %s/bin/manage.py collectstatic' % env.DEPLOY_PATH)
