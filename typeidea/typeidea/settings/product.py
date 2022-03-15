@@ -45,8 +45,8 @@ CACHES = {
 }
 
 # 配置线上环境 DEBUG=False时的静态文件获取路径
-STATIC_ROOT = os.path.join(BASE_DIR, 'static_files/')
-
+# STATIC_ROOT = os.path.join(BASE_DIR, 'static_files/')
+STATIC_ROOT = '../static_files'
 # 配置日志
 
 LOGGING = {
@@ -64,14 +64,14 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'default',
         },
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': 'tmp/logs/typeidea.log',
-            'formatter': 'default',
-            'maxBytes': 1024 * 1024,  # 1M
-            'backupCount': 5,
-        },
+        # 'file': {
+        #     'level': 'INFO',
+        #     'class': 'logging.handlers.RotatingFileHandler',
+        #     'filename': 'tmp/logs/typeidea.log',
+        #     'formatter': 'default',
+        #     'maxBytes': 1024 * 1024,  # 1M
+        #     'backupCount': 5,
+        # },
 
     },
     'loggers': {
