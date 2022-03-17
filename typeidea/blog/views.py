@@ -6,7 +6,9 @@ from django.shortcuts import get_object_or_404
 from blog.models import Post, Tag, Category
 
 from config.models import SideBar
+from .forms import RegisterForm
 from django.views.generic import ListView, DetailView, TemplateView
+from django.contrib.auth.models import User, Permission
 
 
 # from silk.profiling.profiler import silk_profile
@@ -160,6 +162,42 @@ class Handler50x(CommonViewMixin, TemplateView):
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context, status=500)
 
+
+class RegisterView(CommonViewMixin, TemplateView):
+    template_name = 'register.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(RegisterView, self).get_context_data()
+        context.update({
+            'register_form': RegisterForm,
+        })
+        return context
+
+
+class HandleRegisterView(TemplateView):
+    http_method_names = ['post']
+    template_name = 'register_result.html'
+
+    def post(self, request, *args, **kwargs):
+        register_form = RegisterForm(request.POST)
+        if register_form.is_valid():
+            username = register_form.clean_username()
+            email = register_form.cleaned_data.get('email')
+            password = register_form.clean_password2()
+            user = User.objects.create_user(username=username, email=email, password=password, is_staff=True)
+            pers = Permission.objects.filter(content_type_id__in=['1', '2', '3', '4', '5', '6'])
+            for per in pers:
+                user.user_permissions.add(per)
+            succeed = True
+        else:
+            succeed = False
+
+        context = {
+            'succeed': succeed,
+            'form': register_form,
+
+        }
+        return self.render_to_response(context)
 # 基于function view的代码
 # def post_list(request, category_id=None, tag_id=None):
 #     tag = None

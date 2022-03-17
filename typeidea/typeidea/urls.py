@@ -22,7 +22,8 @@ from rest_framework.documentation import include_docs_urls
 from blog.views import (
     IndexView, CategoryView, TagView, PostDetailView,
     SearchView, AuthorView,
-    Handler404, Handler50x
+    Handler404, Handler50x,
+    RegisterView,HandleRegisterView,
 )
 from comment.views import CommentView
 from django.contrib.sitemaps import views as sitemap_views
@@ -72,9 +73,16 @@ urlpatterns = [
                   url(r'^ckeditor/', include('ckeditor_uploader.urls')),
                   url(r'^api/', include(router.urls)),
                   url(r'^api/docs/', include_docs_urls(title='typeidea apis')),
+                  url(r'^register/$',RegisterView.as_view(),name="register"),
+                  url(r'^handle_register/$',HandleRegisterView.as_view(),name="handle_register"),
 
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
               + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+
+urlpatterns += [
+    url('captcha/', include('captcha.urls')),
+]
 
 if settings.DEBUG:
     import debug_toolbar

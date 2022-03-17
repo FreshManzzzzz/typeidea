@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'rest_framework',
+    'captcha',
 
     'django.contrib.admin',
     'django.contrib.auth',

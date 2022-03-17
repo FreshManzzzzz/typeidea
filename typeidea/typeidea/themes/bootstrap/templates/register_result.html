@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>注册结果页</title>
+    <style>
+            body {TEXT-ALIGN:center;}
+            .result {
+                text-align:center;
+                width:40%;
+                margin:auto;
+            }
+            .errorlist {color:red;}
+            ul li {
+            list-style-type :None;
+            }
+
+    </style>
+</head>
+<body>
+<div class="result">
+    {% if succeed %}
+        注册成功！！
+        来这里<a href="/admin/">登录！</a>
+    {% else %}
+        <ul class="errorlist">
+        {% for field, message in form.errors.items %}
+            <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+        <a href="javascript:window.history.back();">返回</a>
+    {% endif %}
+</div>
+</body>
+</html>
