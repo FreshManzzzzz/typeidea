@@ -19,24 +19,24 @@ from django.contrib.auth.models import User, Permission
 class CommonViewMixin:
     # @silk_profile(name='get_context_data')
     def get_context_data(self, **kwargs):
-        # context = super().get_context_data(**kwargs)
-        # context.update({
-        #     'sidebars': SideBar.get_all(),
-        # })
-        # context.update(Category.get_navs())
-        # context.update(Tag.get_all_tags())
-        # return context
-
-        kwargs.update({
+        context = super().get_context_data(**kwargs)
+        context.update({
             'sidebars': SideBar.get_all(),
         })
-        kwargs.update(Category.get_navs())
-        kwargs.update(Tag.get_all_tags())
-        return super().get_context_data(**kwargs)
+        context.update(Category.get_navs())
+        context.update(Tag.get_all_tags())
+        return context
+
+        # kwargs.update({
+        #     'sidebars': SideBar.get_all(),
+        # })
+        # kwargs.update(Category.get_navs())
+        # kwargs.update(Tag.get_all_tags())
+        # return super().get_context_data(**kwargs)
 
 
 class IndexView(CommonViewMixin, ListView):
-    queryset = Post.hot_posts()
+    queryset = Post.latest_posts()
     paginate_by = 5
     context_object_name = 'post_list'
     template_name = 'blog/list.html'
